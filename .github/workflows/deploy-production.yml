@@ -1,8 +1,5 @@
 name: Deploy to production
 
-# This workflow automatically deploys to production when changes are merged to main
-# No manual label is required like in the staging workflow
-
 on:
   push:
     branches:
@@ -10,12 +7,8 @@ on:
 
 env:
   IMAGE_REGISTRY_URL: ghcr.io
-  ###############################################
-  ### Replace <username> with GitHub username ###
-  ###############################################
   DOCKER_IMAGE_NAME: msalsouri-azure-ttt
   AZURE_WEBAPP_NAME: msalsouri-ttt-app
-  ###############################################
 
 jobs:
   build:
