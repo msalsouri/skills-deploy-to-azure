@@ -1,0 +1,29 @@
+name: Stage the app
+
+on:
+  pull_request:
+    types: [labeled]  # This triggers when a label is applied to a pull request
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    # This condition filters the build job only when the 'stage' label is applied
+    if: contains(github.event.pull_request.labels.*.name, 'stage')
+
+    steps:
+      # Step 1: Check out the code
+      - uses: actions/checkout@v4
+
+      # Step 2: Run staging commands
+      - name: Run staging setup
+        run: |
+          echo "Setting up the staging environment..."
+          # Add your staging-specific commands here
+
+      # Step 3: Optional: deploy the application to the staging environment
+      - name: Deploy to staging
+        run: |
+          echo "Deploying application to staging..."
+          # Add your deployment commands here
+
