@@ -1,5 +1,8 @@
 name: Deploy to production
 
+# This workflow automatically deploys to production when changes are merged to main
+# No manual label is required like in the staging workflow
+
 on:
   push:
     branches:
