@@ -1,4 +1,6 @@
-name: Configure Azure environment
+name: 🏗 Configure Azure Environment
+
+# This workflow provisions or destroys Azure resources when labeled
 
 on:
   pull_request:
@@ -6,62 +8,79 @@ on:
 
 env:
   IMAGE_REGISTRY_URL: ghcr.io
-  AZURE_RESOURCE_GROUP: cd-with-actions
-  AZURE_APP_PLAN: actions-ttt-deployment
-  AZURE_LOCATION: '"North Europe"'
-  ###############################################
-  ### Replace <username> with GitHub username ###
-  ###############################################
-  AZURE_WEBAPP_NAME: msalsouri-ttt-app
+  AZURE_RESOURCE_GROUP: auto-deploy-rg
+  AZURE_APP_PLAN: auto-deploy-app-plan
+  AZURE_LOCATION: North Europe
+  AZURE_WEBAPP_NAME: ${{ github.repository_owner }}-${{ github.event.repository.name }}-app
 
 jobs:
-  setup-up-azure-resources:
+  setup-azure-resources:
+    name: 🌱 Spin Up Azure Environment
     runs-on: ubuntu-latest
     if: contains(github.event.pull_request.labels.*.name, 'spin up environment')
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Azure login
+      - name: Azure Login
         uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Create Azure resource group
-        if: success()
+      - name: Create Resource Group
         run: |
-          az group create --location ${{env.AZURE_LOCATION}} --name ${{env.AZURE_RESOURCE_GROUP}} --subscription ${{secrets.AZURE_SUBSCRIPTION_ID}}
+          az group create \
+            --location "${{ env.AZURE_LOCATION }}" \
+            --name "${{ env.AZURE_RESOURCE_GROUP }}" \
+            --subscription "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
 
-      - name: Create Azure app service plan
-        if: success()
+      - name: Create App Service Plan
         run: |
-          az appservice plan create --resource-group ${{env.AZURE_RESOURCE_GROUP}} --name ${{env.AZURE_APP_PLAN}} --is-linux --sku F1 --subscription ${{secrets.AZURE_SUBSCRIPTION_ID}}
+          az appservice plan create \
+            --resource-group "${{ env.AZURE_RESOURCE_GROUP }}" \
+            --name "${{ env.AZURE_APP_PLAN }}" \
+            --is-linux \
+            --sku F1 \
+            --subscription "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
 
-      - name: Create webapp resource
-        if: success()
+      - name: Create Azure Web App
         run: |
-          az webapp create --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --plan ${{ env.AZURE_APP_PLAN }} --name ${{ env.AZURE_WEBAPP_NAME }}  --deployment-container-image-name nginx --subscription ${{secrets.AZURE_SUBSCRIPTION_ID}}
+          az webapp create \
+            --resource-group "${{ env.AZURE_RESOURCE_GROUP }}" \
+            --plan "${{ env.AZURE_APP_PLAN }}" \
+            --name "${{ env.AZURE_WEBAPP_NAME }}" \
+            --deployment-container-image-name nginx \
+            --subscription "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
 
-      - name: Configure webapp to use GHCR
-        if: success()
+      - name: Configure Web App for GHCR
         run: |
-          az webapp config container set --docker-custom-image-name nginx --docker-registry-server-password ${{secrets.CR_PAT}} --docker-registry-server-url https://${{env.IMAGE_REGISTRY_URL}} --docker-registry-server-user ${{github.actor}} --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --subscription ${{secrets.AZURE_SUBSCRIPTION_ID}}
+          az webapp config container set \
+            --docker-custom-image-name nginx \
+            --docker-registry-server-url "https://${{ env.IMAGE_REGISTRY_URL }}" \
+            --docker-registry-server-user "${{ github.actor }}" \
+            --docker-registry-server-password "${{ secrets.CR_PAT }}" \
+            --name "${{ env.AZURE_WEBAPP_NAME }}" \
+            --resource-group "${{ env.AZURE_RESOURCE_GROUP }}" \
+            --subscription "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
 
   destroy-azure-resources:
+    name: 🧨 Destroy Azure Environment
     runs-on: ubuntu-latest
-
     if: contains(github.event.pull_request.labels.*.name, 'destroy environment')
-
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Azure login
+      - name: Azure Login
         uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Destroy Azure environment
-        if: success()
+      - name: Delete Resource Group
         run: |
-          az group delete --name ${{env.AZURE_RESOURCE_GROUP}} --subscription ${{secrets.AZURE_SUBSCRIPTION_ID}} --yes
+          az group delete \
+            --name "${{ env.AZURE_RESOURCE_GROUP }}" \
+            --subscription "${{ secrets.AZURE_SUBSCRIPTION_ID }}" \
+            --yes
+
+
