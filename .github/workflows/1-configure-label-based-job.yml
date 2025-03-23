@@ -1,4 +1,4 @@
-name: Step 1, Trigger a job based on labels
+name: Trigger Deployments by Label
 
 # This step triggers after 0-start.yml.
 # This workflow updates from step 1 to step 2.
