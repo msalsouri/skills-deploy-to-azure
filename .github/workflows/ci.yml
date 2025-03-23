@@ -17,7 +17,7 @@ env:
 
 jobs:
   codeql:
-    name: 🛠 CodeQL Analysis
+    name: 💠 CodeQL Analysis
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -48,12 +48,12 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.CR_PAT }}
 
-      - name: Set Docker image tags
-        id: meta
+      - name: Define Docker image tags
+        id: tag
         run: |
-          echo "tags=ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ github.sha }}" >> $GITHUB_OUTPUT
-          if [ '${{ github.ref }}' = 'refs/heads/main' ]; then
-            echo "tags+=,ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:main" >> $GITHUB_OUTPUT
+          echo "sha_tag=ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ github.sha }}" >> $GITHUB_OUTPUT
+          if [[ '${{ github.ref }}' == 'refs/heads/main' ]]; then
+            echo "main_tag=ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:main" >> $GITHUB_OUTPUT
           fi
 
       - name: Build and push Docker image
@@ -61,7 +61,9 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: |
+            ${{ steps.tag.outputs.sha_tag }}
+            ${{ steps.tag.outputs.main_tag }}
 
   deploy-staging:
     name: ✅ Auto Deploy to Staging
@@ -98,6 +100,7 @@ jobs:
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           images: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:main
+
 
 
 
