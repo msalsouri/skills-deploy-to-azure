@@ -55,3 +55,4 @@ It transforms your repository into a deployment engine with zero manual steps. W
 ## 🔁 Staging Test Deployment Triggered
 ## 🔧 Azure Setup Test
 ## 🔁 Final Staging Deployment Triggered
+🔁 Test deploy-staging label trigger
