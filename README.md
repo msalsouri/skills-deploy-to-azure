@@ -1,56 +1,56 @@
-<header>
+# Deploy to Azure as a Service
 
-<!--
-  <<< Author notes: Course header >>>
-  Include a 1280x640 image, course title in sentence case, and a concise description in emphasis.
-  In your repository settings: enable template repository, add your 1280x640 social image, auto delete head branches.
-  Add your open source license, GitHub uses MIT license.
--->
-
-# Deploy to Azure
-
-_Create two deployment workflows using GitHub Actions and Microsoft Azure._
-
-</header>
-
-<!--
-  <<< Author notes: Finish >>>
-  Review what we learned, ask for feedback, provide next steps.
--->
-
-## Finish
-
-<img src=https://octodex.github.com/images/octdrey-catburn.jpg alt=celebrate width=300 align=right>
-
-### Congratulations, you've completed this course!
-
-Here's a recap of all the tasks you've accomplished in your repository:
-
-- Trigger a job based on labels
-- Set up the Azure environment
-- Spin up environment based on labels
-- Deploy to a staging environment based on labels
-- Deploy to a production environment based on labels
-- Destroy environment based on labels
-
-### What's next?
-
-- [We'd love to hear what you thought of this course](https://github.com/orgs/skills/discussions/categories/deploy-to-azure).
-- [Take another GitHub Skills Course](https://github.com/skills).
-- [Read the GitHub Getting Started docs](https://docs.github.com/en/get-started).
-- To find projects to contribute to, check out [GitHub Explore](https://github.com/explore).
-
-<footer>
-
-<!--
-  <<< Author notes: Footer >>>
-  Add a link to get support, GitHub status page, code of conduct, license link.
--->
+_This SaaS starter automates app deployments to Azure using GitHub Actions._
 
 ---
 
-Get help: [Post in our discussion board](https://github.com/orgs/skills/discussions/categories/deploy-to-azure) &bull; [Review the GitHub status page](https://www.githubstatus.com/)
+## Overview
 
-&copy; 2023 GitHub &bull; [Code of Conduct](https://www.contributor-covenant.org/version/2/1/code_of_conduct/code_of_conduct.md) &bull; [MIT License](https://gh.io/mit)
+This repository is designed to help teams deploy their applications to Azure with minimal configuration using GitHub Actions. It provides a production-ready automation workflow that allows developers to ship faster with confidence.
 
-</footer>
+---
+
+## What You Get with This SaaS Starter
+
+- 🔖 **Label-triggered deployments**: Use labels like `deploy-staging`, `deploy-prod`, and `teardown` to control GitHub Actions workflows.
+- ⚙️ **Azure environment automation**: Seamlessly set up and manage your Azure resources.
+- 🚀 **One-click deployment**: Simple PR-based deployments to staging and production environments.
+- 🧹 **Environment cleanup**: Automatically destroy temporary environments to save costs.
+- 📦 **Template repository ready**: Use this as a boilerplate for new projects or customer deployments.
+
+---
+
+## How It Works
+
+1. **Add a label** to your pull request, such as `deploy-staging`.
+2. GitHub Actions detects the label and triggers the associated deployment workflow.
+3. The app is deployed to the corresponding Azure environment.
+4. Use the `teardown` label to destroy temporary resources when no longer needed.
+
+---
+
+## Usage
+
+1. Clone this repository or use it as a **template**.
+2. Set up Azure authentication using a service principal (already practiced).
+3. Customize the workflows under `.github/workflows/` to match your application.
+4. Push your code and use PR labels to control deployment.
+
+---
+
+## License
+
+MIT License – see [LICENSE](LICENSE) file for details.
+
+---
+
+## Contact & Support
+
+For questions or business inquiries, contact us:
+
+- 📧 **Email:** [info@hoiltd.com](mailto:info@hoiltd.com)
+- 🌐 **Enterprise:** [HOILTD GitHub Enterprise](https://github.com/enterprises/hoiltd)
+- 🏢 **Organization:** [HOME-OFFICE-IMPROVEMENTS-LTD](https://github.com/HOME-OFFICE-IMPROVEMENTS-LTD)
+
+&copy; 2025 Home & Office Improvements Ltd
+
