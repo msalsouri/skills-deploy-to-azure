@@ -62,3 +62,4 @@ Trigger GHCR image push Sun Mar 23 22:19:16 GMT 2025
 🧪 Force deploy after tag fix Sun Mar 23 22:49:45 GMT 2025
 🚀 Final test build Sun Mar 23 22:55:12 GMT 2025
 🔥 Force new image with :main tag Sun Mar 23 23:14:32 GMT 2025
+🚀 Debugging tag issue Sun Mar 23 23:23:40 GMT 2025
