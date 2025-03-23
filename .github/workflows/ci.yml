@@ -53,9 +53,6 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}
-          tags: |
-            type=sha,format=long
-            type=ref,event=pr
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
@@ -64,7 +61,7 @@ jobs:
           push: true
           tags: |
             ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ github.sha }}
-            ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:main
+            ${{ github.ref == 'refs/heads/main' && format('ghcr.io/{0}/{1}:main', github.repository_owner, github.event.repository.name) || '' }}
 
   deploy-staging:
     name: ✅ Auto Deploy to Staging
@@ -100,5 +97,6 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
-          images: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ github.sha }}
+          images: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:main
+
 
