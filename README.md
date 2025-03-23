@@ -54,3 +54,4 @@ It transforms your repository into a deployment engine with zero manual steps. W
 &copy; 2025 HOME & OFFICE IMPROVEMENTS LTD • MIT License • Powered by GitHub Actions
 ## 🔁 Staging Test Deployment Triggered
 ## 🔧 Azure Setup Test
+## 🔁 Retry Staging Deployment
