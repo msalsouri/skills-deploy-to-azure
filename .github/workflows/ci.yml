@@ -15,7 +15,7 @@ permissions:
 
 env:
   AZURE_WEBAPP_NAME: msalsouri-skills-deploy-to-azure-app
-  IMAGE_NAME: msalsouri-azure-ttt
+  IMAGE_NAME: msalsouri/skills-publish-packages
 
 jobs:
   codeql:
@@ -52,18 +52,18 @@ jobs:
 
       - name: 🔍 Debug image path & auth
         run: |
-          echo "Using image: ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
+          echo "Using image: ghcr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}"
           echo "Actor: ${{ github.actor }}"
           echo "Token set: ${{ secrets.CR_PAT != '' }}"
 
       - name: Define Docker image tags
         id: tag
         run: |
-          echo "sha_tag=ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ github.sha }}" >> $GITHUB_OUTPUT
-          echo "tags=ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ github.sha }}" > tags.txt
+          echo "sha_tag=ghcr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}" >> $GITHUB_OUTPUT
+          echo "tags=ghcr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}" > tags.txt
           if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-            echo "main_tag=ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:main" >> $GITHUB_OUTPUT
-            echo "ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:main" >> tags.txt
+            echo "main_tag=ghcr.io/${{ env.IMAGE_NAME }}:main" >> $GITHUB_OUTPUT
+            echo "ghcr.io/${{ env.IMAGE_NAME }}:main" >> tags.txt
           fi
 
       - name: Build and push Docker image
@@ -91,7 +91,7 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
-          images: ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          images: ghcr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}
 
   deploy-production:
     name: 🔧 Auto Deploy to Production
@@ -109,7 +109,11 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
-          images: ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:main
+          images: ghcr.io/${{ env.IMAGE_NAME }}:main
+
+
+
+
 
 
 
