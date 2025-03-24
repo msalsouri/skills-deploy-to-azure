@@ -40,7 +40,6 @@ jobs:
       contents: read
       id-token: write
     if: contains(github.event.pull_request.labels.*.name, 'deploy-staging') || github.ref == 'refs/heads/main'
-
     steps:
       - uses: actions/checkout@v4
 
@@ -81,7 +80,6 @@ jobs:
       id-token: write
       contents: read
     if: contains(github.event.pull_request.labels.*.name, 'deploy-staging')
-
     steps:
       - uses: azure/login@v2
         with:
@@ -108,6 +106,27 @@ jobs:
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           images: ghcr.io/msalsouri/skills-publish-packages:main
+
+  destroy:
+    name: 🧹 Destroy Azure Environment
+    runs-on: ubuntu-latest
+    if: contains(github.event.pull_request.labels.*.name, 'destroy environment')
+    permissions:
+      id-token: write
+    steps:
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Delete Azure Web App
+        run: |
+          az webapp delete --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group auto-deploy-rg
+
+      - name: Delete Resource Group
+        run: |
+          az group delete --name auto-deploy-rg --yes --no-wait
+
 
 
 
