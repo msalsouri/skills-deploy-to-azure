@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: read
+  security-events: write  # Needed for CodeQL upload
   packages: write
   id-token: write
   pull-requests: write
@@ -17,7 +18,7 @@ env:
 
 jobs:
   codeql:
-    name: 💠 CodeQL Analysis
+    name: 🔠 CodeQL Analysis
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -32,7 +33,7 @@ jobs:
         uses: github/codeql-action/analyze@v3
 
   build:
-    name: 📚 Build & Publish Docker Image
+    name: 📚 Build & Push Docker Image
     runs-on: ubuntu-latest
     needs: codeql
     if: contains(github.event.pull_request.labels.*.name, 'deploy-staging') || github.ref == 'refs/heads/main'
@@ -52,8 +53,10 @@ jobs:
         id: tag
         run: |
           echo "sha_tag=ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ github.sha }}" >> $GITHUB_OUTPUT
-          if [[ '${{ github.ref }}' == 'refs/heads/main' ]]; then
+          echo "tags=ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ github.sha }}" > tags.txt
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
             echo "main_tag=ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:main" >> $GITHUB_OUTPUT
+            echo "ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:main" >> tags.txt
           fi
 
       - name: Build and push Docker image
@@ -63,7 +66,7 @@ jobs:
           push: true
           tags: |
             ${{ steps.tag.outputs.sha_tag }}
-            ${{ steps.tag.outputs.main_tag }}
+            ${{ steps.tag.outputs.main_tag || '' }}
 
   deploy-staging:
     name: ✅ Auto Deploy to Staging
@@ -100,6 +103,12 @@ jobs:
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           images: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:main
+
+
+
+
+
+
 
 
 
