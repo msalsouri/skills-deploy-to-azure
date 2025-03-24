@@ -95,8 +95,8 @@ jobs:
       - name: Push Docker Image
         run: |
           echo "Pushing Docker image to GHCR..."
-          docker push ghcr.io/msalsouri/skills-deploy-to-azure:${{ github.sha }} || exit 1
-          docker push ghcr.io/msalsouri/skills-deploy-to-azure:main || echo "Main tag push failed."
+          docker push ghcr.io/msalsouri/skills-deploy-to-azure:${{ github.sha }} > docker_push.log 2>&1 || (cat docker_push.log && exit 1)
+          docker push ghcr.io/msalsouri/skills-deploy-to-azure:main > docker_push_main.log 2>&1 || (cat docker_push_main.log && echo "Main tag push failed.")
 
   deploy-staging:
     name: ✅ Auto Deploy to Staging
