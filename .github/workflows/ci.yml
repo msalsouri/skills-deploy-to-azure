@@ -53,7 +53,12 @@ jobs:
       - name: Verify Docker Login
         run: |
           echo "Verifying Docker login..."
-          docker info | grep "Username: msalsouri" || echo "Docker login failed."
+          docker info || echo "Docker login failed."
+
+      - name: Verify Build Context
+        run: |
+          echo "Verifying build context..."
+          ls -la
 
       - name: Define Docker image tags
         id: tag
@@ -66,7 +71,7 @@ jobs:
       - name: Build Docker Image
         run: |
           echo "Building Docker image..."
-          docker build -t ghcr.io/msalsouri/skills-deploy-to-azure:${{ github.sha }} .
+          docker build -t ghcr.io/msalsouri/skills-deploy-to-azure:${{ github.sha }} . || exit 1
 
       - name: List Docker Images
         run: |
@@ -76,7 +81,7 @@ jobs:
       - name: Push Docker Image
         run: |
           echo "Pushing Docker image to GHCR..."
-          docker push ghcr.io/msalsouri/skills-deploy-to-azure:${{ github.sha }}
+          docker push ghcr.io/msalsouri/skills-deploy-to-azure:${{ github.sha }} || exit 1
           docker push ghcr.io/msalsouri/skills-deploy-to-azure:main || echo "Main tag push failed."
 
   deploy-staging:
