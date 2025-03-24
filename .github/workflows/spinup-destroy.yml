@@ -1,0 +1,30 @@
+name: Spinup and Destroy Workflow
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    types: [opened, synchronize, reopened, labeled]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  spinup:
+    name: 🚀 Spinup Environment
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up environment
+        run: echo "Setting up environment..."
+
+  destroy:
+    name: 🔥 Destroy Environment
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Destroy environment
+        run: echo "Destroying environment..."
