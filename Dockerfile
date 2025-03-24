@@ -7,3 +7,4 @@ COPY . /usr/share/nginx/html♻️ Force fresh build with new hash Sun Mar 23 23
 🚀 Final GHCR test - Mon Mar 24 15:54:16 GMT 2025
 🚀 Testing GHCR with new repo - Mon Mar 24 19:28:40 GMT 2025
 🧪 Final test with skills-publish-packages repo - Mon Mar 24 19:31:54 GMT 2025
+✅ GHCR image path fixed - Mon Mar 24 19:53:48 GMT 2025
