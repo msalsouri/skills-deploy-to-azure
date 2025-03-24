@@ -60,6 +60,14 @@ jobs:
           echo "Verifying build context..."
           ls -la
 
+      - name: Check for Dockerfile
+        run: |
+          echo "Checking for Dockerfile..."
+          if [ ! -f Dockerfile ]; then
+            echo "Error: Dockerfile not found in the root directory."
+            exit 1
+          fi
+
       - name: Define Docker image tags
         id: tag
         run: |
@@ -71,12 +79,18 @@ jobs:
       - name: Build Docker Image
         run: |
           echo "Building Docker image..."
-          docker build -t ghcr.io/msalsouri/skills-deploy-to-azure:${{ github.sha }} . || exit 1
+          docker build -t ghcr.io/msalsouri/skills-deploy-to-azure:${{ github.sha }} . > docker_build.log 2>&1 || (cat docker_build.log && exit 1)
 
       - name: List Docker Images
         run: |
           echo "Listing Docker images..."
           docker images
+
+      - name: Verify Push Permissions
+        run: |
+          echo "Verifying push permissions..."
+          gh auth status || echo "GitHub CLI authentication failed."
+          gh api -H "Accept: application/vnd.github+json" /user/packages || echo "Failed to list packages. Check permissions."
 
       - name: Push Docker Image
         run: |
