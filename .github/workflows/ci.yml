@@ -15,7 +15,7 @@ permissions:
 
 env:
   AZURE_WEBAPP_NAME: msalsouri-skills-deploy-to-azure-app
-  IMAGE_NAME: msalsouri/skills-publish-packages
+  IMAGE_NAME: ghcr.io/msalsouri/skills-publish-packages
 
 jobs:
   codeql:
@@ -56,14 +56,23 @@ jobs:
           echo "Actor: ${{ github.actor }}"
           echo "Token set: ${{ secrets.CR_PAT != '' }}"
 
+      - name: Verify CR_PAT Scope
+        run: |
+          echo "Checking CR_PAT scope..."
+          gh auth status
+          gh api -H "Accept: application/vnd.github+json" /user/packages/container/skills-publish-packages || echo "Package not found or insufficient permissions."
+
+      - name: Debug Package Visibility
+        run: |
+          echo "Checking package visibility..."
+          gh api -H "Accept: application/vnd.github+json" /users/msalsouri/packages/container/skills-publish-packages/versions || echo "Package not found or private."
+
       - name: Define Docker image tags
         id: tag
         run: |
-          echo "sha_tag=ghcr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}" >> $GITHUB_OUTPUT
-          echo "tags=ghcr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}" > tags.txt
-          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-            echo "main_tag=ghcr.io/${{ env.IMAGE_NAME }}:main" >> $GITHUB_OUTPUT
-            echo "ghcr.io/${{ env.IMAGE_NAME }}:main" >> tags.txt
+          echo "sha_tag=ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ github.sha }}" >> $GITHUB_OUTPUT
+          if [[ '${{ github.ref }}' == 'refs/heads/main' ]]; then
+            echo "main_tag=ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:main" >> $GITHUB_OUTPUT
           fi
 
       - name: Build and push Docker image
@@ -74,6 +83,23 @@ jobs:
           tags: |
             ${{ steps.tag.outputs.sha_tag }}
             ${{ steps.tag.outputs.main_tag || '' }}
+
+      - name: Debug Docker Build Context
+        run: |
+          echo "Listing files in the build context:"
+          ls -la
+
+      - name: Debug Docker Image Build
+        run: |
+          echo "Building Docker image locally..."
+          docker build -t ${{ env.IMAGE_NAME }}:${{ github.sha }} .
+          docker images
+
+      - name: Debug Docker Push
+        run: |
+          echo "Pushing Docker image to GHCR..."
+          docker push ${{ env.IMAGE_NAME }}:${{ github.sha }}
+          docker push ${{ env.IMAGE_NAME }}:main || echo "Main tag push failed."
 
   deploy-staging:
     name: ✅ Auto Deploy to Staging
@@ -110,6 +136,7 @@ jobs:
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           images: ghcr.io/${{ env.IMAGE_NAME }}:main
+
 
 
 
