@@ -8,14 +8,14 @@ on:
 
 permissions:
   contents: read
-  security-events: write  # ✅ Needed for CodeQL to upload results
+  security-events: write
   packages: write
   id-token: write
   pull-requests: write
 
 env:
   AZURE_WEBAPP_NAME: msalsouri-skills-deploy-to-azure-app
-  IMAGE_NAME: skills-deploy-to-azure/msalsouri-azure-ttt
+  IMAGE_NAME: msalsouri-azure-ttt  # ✅ Keep it simple and use this as the image tag
 
 jobs:
   codeql:
@@ -34,7 +34,7 @@ jobs:
         uses: github/codeql-action/analyze@v3
 
   build:
-    name: 📚 Build & Publish Docker Image
+    name: 📚 Build & Push Docker Image
     runs-on: ubuntu-latest
     needs: codeql
     if: contains(github.event.pull_request.labels.*.name, 'deploy-staging') || github.ref == 'refs/heads/main'
@@ -50,20 +50,13 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.CR_PAT }}
 
-      - name: 🔍 Debug image path & auth
-        run: |
-          echo "Using image: ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
-          echo "Actor: ${{ github.actor }}"
-          echo "Token set: ${{ secrets.CR_PAT != '' }}"
-
       - name: Define Docker image tags
         id: tag
         run: |
-          echo "sha_tag=ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ github.sha }}" >> $GITHUB_OUTPUT
-          echo "tags=ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ github.sha }}" > tags.txt
-          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-            echo "main_tag=ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:main" >> $GITHUB_OUTPUT
-            echo "ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:main" >> tags.txt
+          IMAGE_REPO="ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}"
+          echo "sha_tag=${IMAGE_REPO}:${{ github.sha }}" >> $GITHUB_OUTPUT
+          if [[ '${{ github.ref }}' == 'refs/heads/main' ]]; then
+            echo "main_tag=${IMAGE_REPO}:main" >> $GITHUB_OUTPUT
           fi
 
       - name: Build and push Docker image
@@ -110,6 +103,7 @@ jobs:
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           images: ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:main
+
 
 
 
