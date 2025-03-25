@@ -1,0 +1,21 @@
+name: Customer Deployment Request
+description: Trigger a new Azure app deployment for a customer
+title: "[DEPLOY] - "
+labels: [deploy-staging]
+body:
+  - type: input
+    id: customer_name
+    attributes:
+      label: Customer Name
+      description: Enter the name of the customer or project
+    validations:
+      required: true
+
+  - type: input
+    id: branch
+    attributes:
+      label: Git Branch
+      description: Which branch should we deploy? (e.g., `main` or `feature/xyz`)
+      default: main
+    validations:
+      required: true
