@@ -5,6 +5,8 @@ on:
     branches: [main]
   pull_request:
     types: [opened, synchronize, reopened, labeled]
+  issues:
+    types: [opened, labeled] 
 
 permissions:
   contents: read
